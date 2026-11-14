@@ -35,27 +35,20 @@ export async function POST(req: NextRequest) {
 
     console.log(`[Crew] Initiating analysis for "${input.name}" (${input.industry})...`);
 
-    // Step 1: Agent 1 - Idea Validator
-    console.log('[Crew] Running Agent 1: Idea Validator...');
-    const validatorResult = await runIdeaValidator(input);
-
-    // Step 2: Fetch Verified Market API Data (Wikipedia + HN Algolia)
+    // Step 1: Fetch Verified Market API Data (Wikipedia + HN Algolia)
     console.log('[Crew] Fetching verified market benchmarks...');
     const verifiedData = await searchVerifiedMarketData(input.industry, input.idea, input.name);
 
-    // Step 3: Agent 2 - Market Research Agent
-    console.log('[Crew] Running Agent 2: Market Research Agent...');
-    const marketResult = await runMarketResearchAgent(input, verifiedData);
+    // Step 2: Run all 4 agents in parallel for high speed (<6s) to avoid Vercel timeouts
+    console.log('[Crew] Executing 4-agent crew in parallel...');
+    const [validatorResult, marketResult, businessResult, marketingResult] = await Promise.all([
+      runIdeaValidator(input),
+      runMarketResearchAgent(input, verifiedData),
+      runBusinessModelAdvisor(input),
+      runMarketingStrategist(input),
+    ]);
 
-    // Step 4: Agent 3 - Business Model Advisor
-    console.log('[Crew] Running Agent 3: Business Model Advisor...');
-    const businessResult = await runBusinessModelAdvisor(input, validatorResult, marketResult);
-
-    // Step 5: Agent 4 - Marketing Strategist
-    console.log('[Crew] Running Agent 4: Marketing Strategist...');
-    const marketingResult = await runMarketingStrategist(input, marketResult, businessResult);
-
-    // Step 6: Generate final startup_report.md
+    // Step 3: Generate final startup_report.md
     console.log('[Crew] Synthesizing final startup_report.md...');
     const markdownReport = generateStartupReportMarkdown(
       input,

@@ -128,71 +128,71 @@ Return a JSON object matching this schema:
 // ==========================================
 export async function runBusinessModelAdvisor(
   input: StartupInput,
-  validator: IdeaValidationResult,
-  market: MarketResearchResult
+  validator?: IdeaValidationResult,
+  market?: MarketResearchResult
 ): Promise<BusinessModelResult> {
   const systemInstruction = `You are the Business Model Advisor in the AI Startup Advisor Crew.
 Your task is to recommend viable revenue models, suggest realistic tiered pricing strategies, map operating costs, and chart an actionable revenue generation roadmap.
-Keep in mind this is an early-stage / student venture with an estimated initial budget of "${input.budget}".
-Ensure cost estimates are realistic for a lean startup (cloud, domain, APIs, tooling).`;
+Keep in mind this is an early-stage venture with an estimated initial budget of "${input.budget}".
+Ensure cost estimates are realistic for a lean startup (cloud, domain, physical/operational tools, marketing).`;
 
   const prompt = `Advise on the business model for:
 - Startup: "${input.name}" (${input.idea})
 - Industry: "${input.industry}"
 - Target Audience: "${input.audience}"
 - Initial Budget: "${input.budget}"
-- Key Feasibility Insights: ${validator.feasibilityReasoning}
-- Market Opportunities: ${market.marketOpportunities.join('; ')}
+${validator ? `- Feasibility Insights: ${validator.feasibilityReasoning}` : ''}
+${market?.marketOpportunities?.length ? `- Market Gaps: ${market.marketOpportunities.join('; ')}` : ''}
 
 Return a JSON object matching this schema:
 {
   "revenueModels": [
-    "Primary revenue model (e.g. Freemium SaaS, Transaction fee, Marketplace commission)",
+    "Primary revenue model (e.g. Service fee, Subscription, Marketplace commission, Pay-per-service)",
     "Secondary / Expansion revenue model"
   ],
   "pricingStrategies": [
     {
-      "tier": "Free / Student Tier",
-      "price": "$0 / month",
+      "tier": "Starter / Basic Tier",
+      "price": "$X / unit or month",
       "features": ["Feature A", "Feature B"]
     },
     {
-      "tier": "Pro / Core Tier",
-      "price": "$X / month or per transaction",
+      "tier": "Core / Standard Tier",
+      "price": "$Y / unit or month",
       "features": ["Feature A", "Feature B", "Feature C"]
     },
     {
-      "tier": "Team / Enterprise Tier",
-      "price": "$Y / month",
+      "tier": "Premium / VIP Tier",
+      "price": "$Z / unit or month",
       "features": ["Feature A", "Feature B", "Feature C", "Priority Support"]
     }
   ],
   "operatingCosts": [
     {
-      "category": "Hosting & Infrastructure (e.g. Vercel, Supabase, Cloudflare)",
-      "estimate": "$0 - $25/mo",
-      "notes": "Generous free tiers cover initial MVP deployment"
+      "category": "Operational / Service Equipment & Space",
+      "estimate": "Cost range tailored to ${input.budget}",
+      "notes": "Key operational necessities"
     },
     {
-      "category": "Domain & Branding",
-      "estimate": "$10 - $15/year",
-      "notes": "Custom .com or student domain discount"
+      "category": "Digital Presence, Booking & Domain",
+      "estimate": "$10 - $25/mo",
+      "notes": "Online booking, website or social profile"
     },
     {
-      "category": "AI API & Processing (Gemini API / LLMs)",
-      "estimate": "$10 - $30/mo",
-      "notes": "Scales per user query; manageable on student budget"
+      "category": "Supplies & Inventory",
+      "estimate": "Allocated portion of initial budget",
+      "notes": "Essential opening supplies"
     },
     {
-      "category": "Marketing & Customer Acquisition",
+      "category": "Local Marketing & Customer Acquisition",
       "estimate": "Remaining budget allocation",
-      "notes": "Organic campus flyering, social clips, community distribution"
+      "notes": "Promotions, local listings, flyers, social reels"
     }
   ],
   "revenueGenerationRoadmap": [
-    "Month 1: Launch MVP with free beta to 50 active users to validate retention",
-    "Month 2-3: Introduce paid tier with high-value feature gating",
-    "Month 4+: Pilot campus ambassador or affiliate referral program to hit initial revenue milestone"
+    "Phase 1: Soft launch to first 30 customers with introductory discount to gather reviews",
+    "Phase 2: Formalize recurring packages and loyalty referral incentives",
+    "Phase 3: Expand capacity and partner with complementary local businesses"
   ]
 }`;
 
@@ -204,11 +204,11 @@ Return a JSON object matching this schema:
 // ==========================================
 export async function runMarketingStrategist(
   input: StartupInput,
-  market: MarketResearchResult,
-  business: BusinessModelResult
+  market?: MarketResearchResult,
+  business?: BusinessModelResult
 ): Promise<MarketingStrategyResult> {
   const systemInstruction = `You are the Marketing Strategist in the AI Startup Advisor Crew.
-Your task is to design an ultra-scrappy, high-impact marketing strategy tailored for student founders with a budget of "${input.budget}".
+Your task is to design an ultra-scrappy, high-impact marketing strategy tailored for founders with an initial budget of "${input.budget}".
 Recommend exact social media platforms, design creative promotional launch campaigns, and formulate a customer acquisition strategy that minimizes Customer Acquisition Cost (CAC).`;
 
   const prompt = `Create a marketing and customer acquisition strategy for:
@@ -217,31 +217,30 @@ Recommend exact social media platforms, design creative promotional launch campa
 - Target Industry: "${input.industry}"
 - Target Audience: "${input.audience}"
 - Initial Budget: "${input.budget}"
-- Key Market Opportunities: ${market.marketOpportunities.join('; ')}
-- Pricing: ${business.pricingStrategies.map((p) => `${p.tier}: ${p.price}`).join(', ')}
+${market?.marketOpportunities?.length ? `- Market Angles: ${market.marketOpportunities.join('; ')}` : ''}
 
 Return a JSON object matching this schema:
 {
   "marketingStrategy": "Comprehensive narrative explaining the core go-to-market angle and brand positioning",
   "recommendedPlatforms": [
     {
-      "platform": "Platform Name (e.g. TikTok, Reddit, LinkedIn, Discord)",
+      "platform": "Platform Name (e.g. Instagram, TikTok, Google Maps/Local SEO, WhatsApp)",
       "rationale": "Why the target audience lives here",
-      "contentFormat": "Specific content format (e.g. behind-the-scenes building, problem demo reels, AMA threads)"
+      "contentFormat": "Specific content format (e.g. before/after transformations, behind-the-scenes clips, local deals)"
     }
   ],
   "promotionalCampaigns": [
     {
       "name": "Campaign Title",
       "channel": "Channel",
-      "description": "How the campaign operates and drives virality",
-      "budgetAllocation": "$X or 0$ (organic)"
+      "description": "How the campaign operates and drives customer acquisition",
+      "budgetAllocation": "Budget share"
     }
   ],
   "customerAcquisitionStrategy": [
     "Step 1: Scrappy organic activation",
-    "Step 2: Community & campus ambassador flywheel",
-    "Step 3: Conversion loop & referral incentive"
+    "Step 2: Community & word-of-mouth referral flywheel",
+    "Step 3: Conversion loop & repeat business incentive"
   ]
 }`;
 
